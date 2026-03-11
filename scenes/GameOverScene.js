@@ -38,5 +38,11 @@ class GameOverScene extends Phaser.Scene {
 
     this.input.keyboard.once('keydown-SPACE', restart);
     this.input.once('pointerdown', restart);
+    var canvas = this.game.canvas;
+    var canvasHandler = function() {
+      canvas.removeEventListener('touchstart', canvasHandler);
+      restart();
+    };
+    canvas.addEventListener('touchstart', canvasHandler);
   }
 }

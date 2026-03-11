@@ -10,6 +10,10 @@ var config = {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH
   },
+  input: {
+    touch: true,
+    activePointers: 3
+  },
   physics: {
     default: 'arcade',
     arcade: {

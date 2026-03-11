@@ -44,5 +44,12 @@ class TitleScene extends Phaser.Scene {
 
     this.input.keyboard.once('keydown-SPACE', startGame);
     this.input.once('pointerdown', startGame);
+    // Fallback: listen on canvas directly for mobile
+    var canvas = this.game.canvas;
+    var canvasHandler = function() {
+      canvas.removeEventListener('touchstart', canvasHandler);
+      startGame();
+    };
+    canvas.addEventListener('touchstart', canvasHandler);
   }
 }
