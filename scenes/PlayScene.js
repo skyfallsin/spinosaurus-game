@@ -35,6 +35,7 @@ class PlayScene extends Phaser.Scene {
     this.player.setDepth(5);
 
     this.cursors = this.input.keyboard.createCursorKeys();
+    this.wasd = this.input.keyboard.addKeys({ up: 'W', down: 'S', left: 'A', right: 'D' });
 
     this.fishGroup = this.physics.add.group();
     this.sharkGroup = this.physics.add.group();
@@ -63,14 +64,25 @@ class PlayScene extends Phaser.Scene {
       fontFamily: 'monospace', fontSize: '16px', color: '#ffffff'
     }).setOrigin(0.5).setDepth(20).setVisible(false);
 
+    // Mobile pause button
+    var isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    if (isMobile && !this.demoMode) {
+      var pauseBtn = this.add.text(240, 226, '⏸', {
+        fontSize: '12px'
+      }).setOrigin(0.5).setDepth(20).setInteractive();
+      pauseBtn.on('pointerdown', function() { this.togglePause(); }, this);
+    }
+
     if (this.demoMode) {
       this.scoreText.setVisible(false);
       this.livesText.setVisible(false);
       this.invincible = true;
       this.player.setVisible(false);
       this.player.body.enable = false;
+      if (document.getElementById('dpad')) document.getElementById('dpad').style.display = 'none';
     } else {
       var self = this;
+      if (document.getElementById('dpad') && isMobile) document.getElementById('dpad').style.display = 'block';
       this.time.delayedCall(300, function() {
         self.input.keyboard.on('keydown-SPACE', function() {
           self.togglePause();
@@ -217,10 +229,11 @@ class PlayScene extends Phaser.Scene {
     this.elapsed += delta;
 
     var speed = 200;
-    if (this.cursors.up.isDown) this.player.body.setVelocityY(-speed);
-    else if (this.cursors.down.isDown) this.player.body.setVelocityY(speed);
-    if (this.cursors.left.isDown) this.player.body.setVelocityX(-speed);
-    else if (this.cursors.right.isDown) this.player.body.setVelocityX(speed);
+    var vk = window.virtualKeys || {};
+    if (this.cursors.up.isDown || this.wasd.up.isDown || vk.up) this.player.body.setVelocityY(-speed);
+    else if (this.cursors.down.isDown || this.wasd.down.isDown || vk.down) this.player.body.setVelocityY(speed);
+    if (this.cursors.left.isDown || this.wasd.left.isDown || vk.left) this.player.body.setVelocityX(-speed);
+    else if (this.cursors.right.isDown || this.wasd.right.isDown || vk.right) this.player.body.setVelocityX(speed);
 
     if (this.player.y < 36) this.player.y = 36;
     if (this.player.y > 215) this.player.y = 215;

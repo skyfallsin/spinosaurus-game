@@ -23,7 +23,9 @@ class TitleScene extends Phaser.Scene {
       fontFamily: 'monospace', fontSize: '7px', color: '#aaccee', align: 'center'
     }).setOrigin(0.5);
 
-    var prompt = this.add.text(128, 200, 'PRESS SPACE TO START', {
+    var isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    var promptText = isMobile ? 'TAP TO START' : 'PRESS SPACE TO START';
+    var prompt = this.add.text(128, 200, promptText, {
       fontFamily: 'monospace', fontSize: '8px', color: '#ffffff'
     }).setOrigin(0.5);
 
@@ -35,9 +37,12 @@ class TitleScene extends Phaser.Scene {
       repeat: -1
     });
 
-    this.input.keyboard.once('keydown-SPACE', function() {
+    var startGame = function() {
       this.scene.stop('PlayScene');
       this.scene.start('PlayScene', { demoMode: false });
-    }, this);
+    }.bind(this);
+
+    this.input.keyboard.once('keydown-SPACE', startGame);
+    this.input.once('pointerdown', startGame);
   }
 }

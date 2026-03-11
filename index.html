@@ -2,14 +2,73 @@
 <html>
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <title>Spinosaurus Smash</title>
   <style>
-    * { margin: 0; padding: 0; }
-    body { background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      background: #000;
+      width: 100%; height: 100%;
+      overflow: hidden;
+      touch-action: none;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    #game {
+      flex-shrink: 0;
+    }
+    #dpad {
+      display: none;
+      position: fixed;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 150px;
+      height: 150px;
+      z-index: 100;
+      opacity: 0.65;
+    }
+    #dpad button {
+      position: absolute;
+      width: 48px;
+      height: 48px;
+      border: 2px solid rgba(255,255,255,0.5);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+      font-size: 22px;
+      line-height: 44px;
+      text-align: center;
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
+      cursor: pointer;
+    }
+    #dpad button:active, #dpad button.pressed {
+      background: rgba(255,255,255,0.35);
+      border-color: rgba(255,255,255,0.8);
+    }
+    #btn-up    { left: 51px; top: 0; }
+    #btn-down  { left: 51px; bottom: 0; }
+    #btn-left  { left: 0; top: 51px; }
+    #btn-right { right: 0; top: 51px; }
   </style>
 </head>
 <body>
   <div id="game"></div>
+  <div id="dpad">
+    <button id="btn-up">▲</button>
+    <button id="btn-down">▼</button>
+    <button id="btn-left">◀</button>
+    <button id="btn-right">▶</button>
+  </div>
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
   <script src="sprites.js"></script>
   <script src="scenes/BootScene.js"></script>
@@ -17,5 +76,51 @@
   <script src="scenes/PlayScene.js"></script>
   <script src="scenes/GameOverScene.js"></script>
   <script src="game.js"></script>
+  <script>
+    // Virtual d-pad touch controller
+    (function() {
+      var isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      var dpad = document.getElementById('dpad');
+
+      // Expose virtual key state globally
+      window.virtualKeys = { up: false, down: false, left: false, right: false };
+
+      if (isMobile) {
+        dpad.style.display = 'block';
+      }
+
+      var buttons = {
+        'btn-up': 'up',
+        'btn-down': 'down',
+        'btn-left': 'left',
+        'btn-right': 'right'
+      };
+
+      Object.keys(buttons).forEach(function(id) {
+        var btn = document.getElementById(id);
+        var dir = buttons[id];
+
+        btn.addEventListener('touchstart', function(e) {
+          e.preventDefault();
+          window.virtualKeys[dir] = true;
+          btn.classList.add('pressed');
+        }, { passive: false });
+
+        btn.addEventListener('touchend', function(e) {
+          e.preventDefault();
+          window.virtualKeys[dir] = false;
+          btn.classList.remove('pressed');
+        }, { passive: false });
+
+        btn.addEventListener('touchcancel', function(e) {
+          window.virtualKeys[dir] = false;
+          btn.classList.remove('pressed');
+        });
+      });
+
+      // Prevent pull-to-refresh and bounce scrolling
+      document.addEventListener('touchmove', function(e) { e.preventDefault(); }, { passive: false });
+    })();
+  </script>
 </body>
 </html>

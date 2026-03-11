@@ -8,6 +8,7 @@ class GameOverScene extends Phaser.Scene {
   }
 
   create() {
+    if (document.getElementById('dpad')) document.getElementById('dpad').style.display = 'none';
     this.add.text(128, 80, 'GAME OVER', {
       fontFamily: 'monospace', fontSize: '16px', color: '#ff4444'
     }).setOrigin(0.5);
@@ -25,12 +26,16 @@ class GameOverScene extends Phaser.Scene {
       fontFamily: 'monospace', fontSize: '10px', color: '#aaaaaa'
     }).setOrigin(0.5);
 
-    this.add.text(128, 170, 'PRESS SPACE TO RESTART', {
+    var isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    this.add.text(128, 170, isMobile ? 'TAP TO RESTART' : 'PRESS SPACE TO RESTART', {
       fontFamily: 'monospace', fontSize: '8px', color: '#88aacc'
     }).setOrigin(0.5);
 
-    this.input.keyboard.once('keydown-SPACE', function() {
+    var restart = function() {
       this.scene.start('TitleScene');
-    }, this);
+    }.bind(this);
+
+    this.input.keyboard.once('keydown-SPACE', restart);
+    this.input.once('pointerdown', restart);
   }
 }
