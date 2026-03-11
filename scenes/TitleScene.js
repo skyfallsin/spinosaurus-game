@@ -7,7 +7,7 @@ class TitleScene extends Phaser.Scene {
     this.scene.launch('PlayScene', { demoMode: true });
     this.scene.bringToTop('TitleScene');
 
-    var overlay = this.add.rectangle(128, 120, 256, 240, 0x000000, 0.55);
+    var overlay = this.add.rectangle(128, 120, 256, 240, 0x000000, 0.55).setInteractive();
 
     this.add.text(128, 55, 'SPINOSAURUS', {
       fontFamily: 'monospace', fontSize: '18px', color: '#ff4444', fontStyle: 'bold'

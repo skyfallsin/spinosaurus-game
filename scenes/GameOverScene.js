@@ -9,6 +9,7 @@ class GameOverScene extends Phaser.Scene {
 
   create() {
     if (document.getElementById('dpad')) document.getElementById('dpad').style.display = 'none';
+    this.add.rectangle(128, 120, 256, 240, 0x000000, 0.01).setInteractive();
     this.add.text(128, 80, 'GAME OVER', {
       fontFamily: 'monospace', fontSize: '16px', color: '#ff4444'
     }).setOrigin(0.5);
